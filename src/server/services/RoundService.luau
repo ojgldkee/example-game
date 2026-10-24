@@ -31,6 +31,7 @@ local function bindDeaths(player: Player)
 		hum.Died:Connect(function()
 			if not running then return end
 			services.PlayerDataService.Add(player,"TotalDeaths",1)
+			player:SetAttribute("RoundDeaths", (player:GetAttribute("RoundDeaths") or 0) + 1)
 			local data=services.PlayerDataService.Get(player)
 			local usedRevive=data and (data.Revives or 0)>0
 			if usedRevive then
@@ -57,6 +58,8 @@ local function resetPlayers()
 	for _, p in ipairs(Players:GetPlayers()) do
 		services.PlayerDataService.Set(p, "Checkpoint", 0)
 		services.CheckpointService.ResetPlayerStage(p)
+		p:SetAttribute("RunStartedAt", Workspace:GetServerTimeNow())
+		p:SetAttribute("RoundDeaths", 0)
 		services.QuestService.EnsureDaily(p)
 		services.PlayerDataService.Add(p,"RoundsPlayed",1)
 		services.QuestService.AddStat(p,"Rounds",1)
