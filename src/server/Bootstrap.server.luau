@@ -19,17 +19,30 @@ for _, name in pairs(Network.Events) do
 		event.Parent = remotes
 	end
 end
+for _, name in pairs(Network.Functions) do
+	if not remotes:FindFirstChild(name) then
+		local fn = Instance.new("RemoteFunction")
+		fn.Name = name
+		fn.Parent = remotes
+	end
+end
 
 local servicesFolder = ServerScriptService.Server:WaitForChild("services")
 local ordered = {
 	"PlayerDataService",
+	"SettingsService",
+	"QuestService",
+	"DailyRewardService",
+	"CosmeticService",
 	"MapService",
 	"CheckpointService",
 	"ObstacleService",
 	"FinishService",
 	"WakeService",
+	"WakeEventService",
 	"MonsterService",
 	"PurchaseService",
+	"ApiService",
 	"RoundService",
 }
 
@@ -37,14 +50,10 @@ local services = {}
 for _, name in ipairs(ordered) do
 	local module = require(servicesFolder:WaitForChild(name))
 	services[name] = module
-	if module.Init then
-		module.Init(services)
-	end
+	if module.Init then module.Init(services) end
 end
 
 for _, name in ipairs(ordered) do
 	local module = services[name]
-	if module.Start then
-		task.spawn(module.Start)
-	end
+	if module.Start then task.spawn(module.Start) end
 end
