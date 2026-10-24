@@ -154,26 +154,40 @@ local function buildFinish(parent)
 end
 
 local function configureLighting()
-	Lighting.Technology=Enum.Technology.Future
-	Lighting.ClockTime=1.5
-	Lighting.Brightness=2.2
-	Lighting.EnvironmentDiffuseScale=.35
-	Lighting.EnvironmentSpecularScale=.55
-	Lighting.GlobalShadows=true
-	Lighting.FogColor=Color3.fromRGB(36,42,60)
-	Lighting.FogStart=75
-	Lighting.FogEnd=900
+	-- Lighting APIs evolve. Never let a visual setting prevent the world from loading.
+	local ok, err = pcall(function()
+		Lighting.LightingStyle = Enum.LightingStyle.Realistic
+		Lighting.PrioritizeLightingQuality = true
+		Lighting.ClockTime = 1.5
+		Lighting.Brightness = 2.2
+		Lighting.EnvironmentDiffuseScale = .35
+		Lighting.EnvironmentSpecularScale = .55
+		Lighting.GlobalShadows = true
+		Lighting.ShadowSoftness = .28
+		Lighting.FogColor = Color3.fromRGB(36,42,60)
+		Lighting.FogStart = 75
+		Lighting.FogEnd = 900
+	end)
+	if not ok then
+		warn("[MapService] Lighting configuration failed but map will continue:", err)
+	end
 end
 
 function MapService.Build()
 	if mapModel then mapModel:Destroy() end
-	mapModel=Instance.new("Model"); mapModel.Name="GeneratedPlayground"; mapModel.Parent=Workspace
-	configureLighting()
+	mapModel=Instance.new("Model")
+	mapModel.Name="GeneratedPlayground"
+	mapModel.Parent=Workspace
+
+	-- Build playable geometry BEFORE any nonessential visual configuration.
 	buildLobby(mapModel)
 	for i=1,Config.Map.SectionCount do
 		buildSection(mapModel,i,Config.Map.StartZ+(i-1)*Config.Map.SectionLength)
 	end
 	buildFinish(mapModel)
+	configureLighting()
+	mapModel:SetAttribute("BuildComplete", true)
+	print("[MapService] GeneratedPlayground built with", Config.Map.SectionCount, "sections")
 	return mapModel
 end
 
