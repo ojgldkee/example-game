@@ -27,7 +27,7 @@ Network.Functions = {
 	PurchaseCosmetic = "PurchaseCosmetic",
 	EquipCosmetic = "EquipCosmetic",
 	UpdateSettings = "UpdateSettings",
-	RerollQuest = "RerollQuest",
+	RerollQuest = "RerollQuest",\n\tPurchaseUpgrade = "PurchaseUpgrade",
 }
 
 return Network
