@@ -28,12 +28,16 @@ local SPRINT_FOV = 76
 
 local function sprintSpeed(): number
 	local value = player:GetAttribute("ObbySprintSpeed")
-	return typeof(value)=="number" and value or Config.Movement.SprintSpeed
+	local base = typeof(value)=="number" and value or Config.Movement.SprintSpeed
+	if player:GetAttribute("PassSpeedCoil") == true then base += 3 end
+	return base
 end
 
 local function jumpPower(): number
 	local value = player:GetAttribute("ObbyJumpPower")
-	return typeof(value)=="number" and value or Config.Movement.JumpPower
+	local base = typeof(value)=="number" and value or Config.Movement.JumpPower
+	if player:GetAttribute("PassGravityCoil") == true then base += 2.5 end
+	return base
 end
 
 local function tweenFov(target: number)
