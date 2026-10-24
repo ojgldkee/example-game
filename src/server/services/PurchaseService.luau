@@ -20,6 +20,9 @@ local function grant(player,name)
 	elseif name=="ReviveTeam" then
 		for _,p in ipairs(Players:GetPlayers()) do services.PlayerDataService.Add(p,"Revives",1) end
 		toastAll(player.DisplayName.." gave everyone a revive!")
+	elseif name=="SkipStage" then
+		local ok, result = services.CheckpointService.SkipOneStage(player)
+		if not ok then error(result) end
 	elseif name=="Tickets500" then services.PlayerDataService.Add(player,"Tickets",500)
 	elseif name=="Tickets1500" then services.PlayerDataService.Add(player,"Tickets",1500)
 	elseif name=="Tickets5000" then services.PlayerDataService.Add(player,"Tickets",5000)
