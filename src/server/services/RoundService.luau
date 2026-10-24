@@ -66,6 +66,7 @@ local function runRound()
 	finalChase = false
 	services.WakeService.Reset()
 	services.MonsterService.Reset()
+	services.FinishService.Reset()
 	resetPlayers()
 	running = true
 
@@ -83,14 +84,6 @@ local function runRound()
 
 	running = false
 	services.MonsterService.Reset()
-	for _, p in ipairs(Players:GetPlayers()) do
-		local data = services.PlayerDataService.Get(p)
-		if data and (data.Checkpoint or 0) >= Config.Map.SectionCount then
-			services.PlayerDataService.Add(p, "Wins", 1)
-			services.PlayerDataService.Add(p, "Tickets", Config.Game.TicketsPerWin)
-			remote(Network.Events.Toast):FireClient(p, ("ESCAPED! +%d Tickets"):format(Config.Game.TicketsPerWin))
-		end
-	end
 end
 
 function RoundService.Init(allServices)
