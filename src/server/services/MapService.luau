@@ -192,5 +192,5 @@ function MapService.Build()
 end
 
 function MapService.GetMap() return mapModel end
-function MapService.Init(_services) MapService.Build() end
+function MapService.Init(_services)\n\t-- WorldBootstrap.server.luau owns initial world construction so map boot is isolated\n\t-- from progression/monetization/round-service failures.\nend
 return MapService
