@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local Network = require(ReplicatedStorage.Shared.Network)
@@ -93,6 +94,18 @@ hint.TextScaled = true
 hint.Parent = gui
 roundRect(hint,10)
 
+local runTimer = Instance.new("TextLabel")
+runTimer.BackgroundColor3 = Color3.fromRGB(15,17,24)
+runTimer.BackgroundTransparency = 0.15
+runTimer.Size = UDim2.fromScale(0.18,0.035)
+runTimer.Position = UDim2.fromScale(0.41,0.19)
+runTimer.Text = "RUN 00:00.00"
+runTimer.TextColor3 = Color3.fromRGB(220,231,255)
+runTimer.Font = Enum.Font.GothamBlack
+runTimer.TextScaled = true
+runTimer.Parent = gui
+roundRect(runTimer,10)
+
 local toast = Instance.new("TextLabel")
 toast.BackgroundColor3 = Color3.fromRGB(15,15,22)
 toast.BackgroundTransparency = 0.08
@@ -170,4 +183,18 @@ end)
 
 remotes.Eliminated.OnClientEvent:Connect(function()
 	showToast("YOU DIED — HAPPY WOKE UP MORE.")
+end)
+
+
+RunService.RenderStepped:Connect(function()
+	local started = player:GetAttribute("RunStartedAt")
+	if typeof(started) ~= "number" then
+		runTimer.Text = "RUN 00:00.00"
+		return
+	end
+	local elapsed = math.max(0, workspace:GetServerTimeNow() - started)
+	local mins = math.floor(elapsed/60)
+	local secs = math.floor(elapsed%60)
+	local hundredths = math.floor((elapsed-math.floor(elapsed))*100)
+	runTimer.Text = ("RUN %02d:%02d.%02d"):format(mins,secs,hundredths)
 end)
