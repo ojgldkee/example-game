@@ -25,6 +25,8 @@ local ordered = {
 	"PlayerDataService",
 	"MapService",
 	"CheckpointService",
+	"ObstacleService",
+	"FinishService",
 	"WakeService",
 	"MonsterService",
 	"PurchaseService",
