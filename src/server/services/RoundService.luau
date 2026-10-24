@@ -30,9 +30,16 @@ local function bindDeaths(player: Player)
 		hum.Died:Connect(function()
 			if not running then return end
 			services.PlayerDataService.Add(player,"TotalDeaths",1)
-			services.WakeService.Add(Config.Game.BaseWakePerDeath)
-			remote(Network.Events.Eliminated):FireClient(player)
-			task.delay(Config.Game.RespawnDelay, function()
+			local data=services.PlayerDataService.Get(player)
+			local usedRevive=data and (data.Revives or 0)>0
+			if usedRevive then
+				services.PlayerDataService.Add(player,"Revives",-1)
+				remote(Network.Events.Toast):FireClient(player,"REVIVE USED — YOU DIDN'T WAKE HAPPY")
+			else
+				services.WakeService.Add(Config.Game.BaseWakePerDeath)
+				remote(Network.Events.Eliminated):FireClient(player)
+			end
+			task.delay(usedRevive and 0.75 or Config.Game.RespawnDelay, function()
 				if player.Parent then
 					player:LoadCharacter()
 					task.wait(0.45)
