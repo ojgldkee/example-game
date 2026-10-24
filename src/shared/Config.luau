@@ -3,7 +3,7 @@ local Config = {}
 
 Config.Game = {
 	Name = "Playground Awake",
-	Version = "0.9.0",
+	Version = "1.0.0-playtest",
 	PlaceTag = "production-candidate",
 	MinPlayers = 1,
 	MaxPlayers = 12,
@@ -28,15 +28,39 @@ Config.Progression = {
 	QuestSlots = 3,
 }
 
+Config.Movement = {
+	WalkSpeed = 16,
+	SprintSpeed = 22,
+	JumpPower = 52,
+	Gravity = 196.2,
+	-- With JumpPower 52 at Roblox gravity, airtime is ~0.53 sec.
+	-- Theoretical horizontal travel: ~8.5 studs walking / ~11.7 sprinting.
+	-- Course geometry is designed so normal required clear gaps stay <= 5.25 studs.
+	SafeWalkClearGap = 5.25,
+	MaxOptionalSprintGap = 7.5,
+}
+
+Config.Obby = {
+	HazardY = -4.25,
+	EarlyHazardDamage = 30,
+	MidHazardDamage = 38,
+	LateHazardDamage = 46,
+	HazardGraceSeconds = 0.8,
+	LaserDamage = 24,
+	LaserGraceSeconds = 0.65,
+	BounceVelocity = 62,
+	CheckpointLift = 4.5,
+}
+
 Config.Map = {
 	SectionCount = 12,
-	SectionLength = 72,
-	CourseWidth = 54,
+	SectionLength = 84,
+	CourseWidth = 58,
 	FloorY = 0,
-	StartZ = 38,
-	WallHeight = 30,
-	CeilingHeight = 31,
-	LobbyLength = 52,
+	StartZ = 42,
+	WallHeight = 32,
+	CeilingHeight = 33,
+	LobbyLength = 58,
 	SeedRotationMinutes = 30,
 }
 
