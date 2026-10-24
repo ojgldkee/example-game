@@ -3,18 +3,18 @@ local Config = {}
 
 Config.Game = {
 	Name = "Playground Awake",
-	Version = "1.0.0-playtest",
+	Version = "1.2.0-obby-overhaul",
 	PlaceTag = "production-candidate",
 	MinPlayers = 1,
 	MaxPlayers = 12,
-	IntermissionSeconds = 18,
-	RoundSeconds = 600,
+	IntermissionSeconds = 12,
+	RoundSeconds = 720,
 	FinalChaseSeconds = 75,
 	RespawnDelay = 2.25,
 	BaseWakePerDeath = 7,
 	MaxWake = 100,
-	TicketsPerCheckpoint = 8,
-	TicketsPerWin = 175,
+	TicketsPerCheckpoint = 12,
+	TicketsPerWin = 250,
 	XPPerCheckpoint = 12,
 	XPPerWin = 160,
 	AutosaveSeconds = 60,
@@ -33,34 +33,41 @@ Config.Movement = {
 	SprintSpeed = 22,
 	JumpPower = 52,
 	Gravity = 196.2,
-	-- With JumpPower 52 at Roblox gravity, airtime is ~0.53 sec.
-	-- Theoretical horizontal travel: ~8.5 studs walking / ~11.7 sprinting.
-	-- Course geometry is designed so normal required clear gaps stay <= 5.25 studs.
-	SafeWalkClearGap = 5.25,
-	MaxOptionalSprintGap = 7.5,
+	-- v=52, g=196.2 => airtime ~= 0.53s.
+	-- At WalkSpeed 16, theoretical flat travel ~= 8.48 studs.
+	-- Required route clear gaps stay between 3.4 and 5.2 studs.
+	SafeWalkClearGap = 5.2,
+	BeginnerGap = 3.8,
+	StandardGap = 4.4,
+	HardGap = 5.0,
+	MaxOptionalSprintGap = 7.0,
 }
 
 Config.Obby = {
-	HazardY = -4.25,
-	EarlyHazardDamage = 30,
-	MidHazardDamage = 38,
-	LateHazardDamage = 46,
-	HazardGraceSeconds = 0.8,
-	LaserDamage = 24,
-	LaserGraceSeconds = 0.65,
-	BounceVelocity = 62,
+	HazardY = -8,
+	EarlyHazardDamage = 28,
+	MidHazardDamage = 36,
+	LateHazardDamage = 44,
+	HazardGraceSeconds = 0.9,
+	LaserDamage = 22,
+	LaserGraceSeconds = 0.7,
+	BounceVelocity = 60,
 	CheckpointLift = 4.5,
+	FallResetDelay = 0.08,
+	BlinkOnSeconds = 1.45,
+	BlinkOffSeconds = 0.8,
+	SpeedPadBoost = 28,
 }
 
 Config.Map = {
-	SectionCount = 12,
-	SectionLength = 84,
-	CourseWidth = 58,
+	SectionCount = 15,
+	SectionLength = 96,
+	CourseWidth = 54,
 	FloorY = 0,
-	StartZ = 42,
-	WallHeight = 32,
-	CeilingHeight = 33,
-	LobbyLength = 58,
+	StartZ = 50,
+	WallHeight = 34,
+	CeilingHeight = 35,
+	LobbyLength = 64,
 	SeedRotationMinutes = 30,
 }
 
@@ -85,12 +92,13 @@ Config.Wake = {
 }
 
 Config.Economy = {
-	StartingTickets = 100,
+	StartingTickets = 150,
 	VIPTicketMultiplier = 1.25,
 	DoubleTicketsMultiplier = 2,
 	DailyBaseTickets = 120,
 	DailyStreakBonus = 35,
 	CosmeticRefundPercent = 0,
+	UpgradeTicketBonusPerLevel = 0.05,
 }
 
 -- Replace zero IDs after creating products/passes in Creator Hub.
@@ -101,11 +109,13 @@ Config.GamePasses = {
 	ExtraCompanionSlot = 0,
 	ExclusiveEmotes = 0,
 	GoldenName = 0,
+	CheckpointAura = 0,
 }
 
 Config.Products = {
 	Revive = 0,
 	ReviveTeam = 0,
+	SkipStage = 0,
 	Tickets500 = 0,
 	Tickets1500 = 0,
 	Tickets5000 = 0,
