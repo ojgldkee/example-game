@@ -68,7 +68,8 @@ function RoundService.BeginFinalChase()
 	if not running or finalChase then return end
 	finalChase = true
 	services.MonsterService.SetActive(true)
-	services.MonsterService.SetRage(true)
+	services.MonsterService.SetFinalChase(true)
+	services.MonsterService.PlaySpecial("Roar", 1.2, true)
 	remote(Network.Events.Round):FireAllClients({phase = "FINAL", seconds = Config.Game.FinalChaseSeconds, roundId=roundId})
 end
 
