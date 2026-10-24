@@ -50,16 +50,16 @@ Use Linux Mint Software Manager or:
 sudo apt install -y blender
 ```
 
-### 7. Generate the Happy blockout rig
+### 7. Generate Happy V2
 ```bash
 mkdir -p exports
 blender --background --python blender/generate_happy.py
 ```
 Expected outputs:
-- `exports/happy.blend`
-- `exports/happy.glb`
+- `exports/happy_v2.blend`
+- `exports/happy_v2.glb`
 
-The GLB is the importable Roblox asset starting point. It still needs visual inspection and iteration before launch.
+Happy V2 includes a more detailed mascot mesh, facial structure, jaw/eye bones, hands, shoes, and authored actions for idle, walk, run, crawl, lunge, roar, wall peek, ceiling crawl, and jumpscare. It still needs visual inspection before launch.
 
 ## Windows / Roblox Studio setup
 
@@ -98,7 +98,7 @@ Press Play and verify:
 - settings and store UI scale correctly on mobile emulation.
 
 ### 6. Import Happy
-Import `exports/happy.glb` using Studio's 3D importer.
+Import `exports/happy_v2.glb` using Studio's 3D importer.
 Move the final model into:
 `ReplicatedStorage > Assets > Happy`
 
