@@ -335,7 +335,7 @@ key_loc(a,48,"Root",(0,0,0)); key_rot(a,48,"Spine",(0,0,0)); key_rot(a,48,"Head"
 # Ceiling crawl variant
 a=action("Happy_CeilingCrawl",1,32,True)
 for fr,phase in [(1,1),(9,-1),(17,1),(25,-1),(32,1)]:
-    key_rot(a,fr,"Root",(180,0,0))
+    key_rot(a,fr,"Pelvis",(0,0,180))
     key_rot(a,fr,"UpperArm_L",(55+22*phase,0,-18)); key_rot(a,fr,"UpperArm_R",(55-22*phase,0,18))
     key_rot(a,fr,"Thigh_L",(-35*phase,0,-14)); key_rot(a,fr,"Thigh_R",(35*phase,0,14))
     key_rot(a,fr,"Head",(-12,0,8*phase))
@@ -349,6 +349,13 @@ key_rot(a,14,"UpperArm_L",(-95,0,-18)); key_rot(a,14,"UpperArm_R",(-95,0,18))
 key_loc(a,23,"Root",(0,-3.0,.75)); key_rot(a,23,"Head",(-25,0,0)); key_rot(a,23,"Jaw",(58,0,0))
 key_loc(a,30,"Root",(0,-3.1,.8))
 
+# Reset pose to neutral before stashing/exporting so the .blend opens upright.
+for pb in arm.pose.bones:
+    pb.rotation_mode = "XYZ"
+    pb.rotation_euler = (0,0,0)
+    pb.location = (0,0,0)
+    pb.scale = (1,1,1)
+
 # Keep all actions associated with rig using NLA stashes so GLTF exports them.
 arm.animation_data_create()
 for a in list(bpy.data.actions):
@@ -358,8 +365,10 @@ for a in list(bpy.data.actions):
     strip.action_frame_start=a.frame_range[0]
     strip.action_frame_end=a.frame_range[1]
 
-# set a neutral action before export
+# Set a neutral action and evaluate frame 1 before saving/export.
 arm.animation_data.action=bpy.data.actions.get("Happy_Idle")
+scene.frame_set(1)
+bpy.context.view_layer.update()
 
 # ---------- floor/reference presentation ----------
 bpy.ops.mesh.primitive_plane_add(size=30, location=(0,0,-.9))
