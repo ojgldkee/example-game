@@ -226,6 +226,10 @@ except Exception as exc:
     arm_mod.object=arm
 
 # ---------- animation helpers ----------
+# Blender does not allocate animation_data until explicitly requested.
+# Create it once before any keyframe helper assigns an action.
+arm.animation_data_create()
+
 def set_rot(pb, xyz_deg):
     pb.rotation_mode="XYZ"
     pb.rotation_euler=[math.radians(v) for v in xyz_deg]
