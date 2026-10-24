@@ -14,5 +14,6 @@ jobs:
         with:
           cache: true
       - run: rojo --version
+      - run: python3 -m py_compile blender/generate_happy.py
       - run: mkdir -p build
       - run: rojo build default.project.json -o build/PlaygroundAwake.rbxl
