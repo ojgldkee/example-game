@@ -110,6 +110,8 @@ Config.GamePasses = {
 	ExclusiveEmotes = 0,
 	GoldenName = 0,
 	CheckpointAura = 0,
+	SpeedCoil = 0,
+	GravityCoil = 0,
 }
 
 Config.Products = {
@@ -123,6 +125,9 @@ Config.Products = {
 	ChaosEvent = 0,
 	WakeSkip = 0,
 	QuestReroll = 0,
+	LowGravityServer = 0,
+	TinyServer = 0,
+	BlackoutServer = 0,
 }
 
 Config.ProductRewards = {
