@@ -152,6 +152,7 @@ local function roomShell(section:Model,centerZ:number,color:Color3,stage:number)
 	entry:SetAttribute("SafeIsland",true)
 
 	local checkpoint=platform(section,"Checkpoint",0,2.4,endZ-7,20,14,P.Green)
+	checkpoint.CFrame *= CFrame.Angles(0,math.pi,0)
 	checkpoint.Material=Enum.Material.Neon
 	checkpoint:SetAttribute("CheckpointIndex",stage)
 	checkpoint:SetAttribute("SafeIsland",true)
@@ -432,7 +433,7 @@ local function buildLobby(parent:Model)
 	local spawn=Instance.new("SpawnLocation")
 	spawn.Name="StartSpawn"
 	spawn.Size=Vector3.new(18,1,14)
-	spawn.CFrame=CFrame.new(0,3,firstStart-14)
+	spawn.CFrame=CFrame.new(0,3,firstStart-14)*CFrame.Angles(0,math.pi,0)
 	spawn.Anchored=true
 	spawn.Neutral=true
 	spawn.Material=Enum.Material.Neon
