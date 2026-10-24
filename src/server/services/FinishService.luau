@@ -26,9 +26,26 @@ function FinishService.Init(allServices)
 			services.PlayerDataService.Add(player,"Tickets",ticketReward)
 			services.PlayerDataService.Add(player,"XP",Config.Game.XPPerWin)
 			services.QuestService.AddStat(player,"Wins",1)
+
+			local startedAt = player:GetAttribute("RunStartedAt")
+			local elapsed = typeof(startedAt)=="number" and math.max(0, Workspace:GetServerTimeNow()-startedAt) or 0
+			local previousBest = data.BestTime or 0
+			local newBest = elapsed > 0 and (previousBest <= 0 or elapsed < previousBest)
+			if newBest then
+				data.BestTime = elapsed
+			end
+
+			local perfectBonus = 0
+			if (player:GetAttribute("RoundDeaths") or 0) == 0 then
+				perfectBonus = 100
+				services.PlayerDataService.Add(player,"Tickets",perfectBonus)
+			end
 			data.BestWakeEscaped=math.max(data.BestWakeEscaped or 0,services.WakeService.Get())
 			services.PlayerDataService.MarkDirty(player)
-			ReplicatedStorage[Network.FolderName].Toast:FireClient(player,("ESCAPED! +%d TICKETS"):format(ticketReward))
+			local message = ("ESCAPED IN %.2fs! +%d TICKETS"):format(elapsed,ticketReward)
+			if perfectBonus > 0 then message ..= " +100 PERFECT" end
+			if newBest then message ..= " • NEW BEST!" end
+			ReplicatedStorage[Network.FolderName].Toast:FireClient(player,message)
 		end)
 	end)
 	Players.PlayerRemoving:Connect(function(p) finished[p]=nil end)
