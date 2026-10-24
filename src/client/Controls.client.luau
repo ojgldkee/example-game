@@ -24,7 +24,7 @@ local JUMP_BUFFER = 0.13
 local LEAN_AMOUNT = 1.05
 local LEAN_TIME = 0.12
 local BASE_FOV = 70
-local SPRINT_FOV = 76
+local SPRINT_FOV = 76\n\nlocal function sprintSpeed(): number\n\tlocal value = player:GetAttribute("ObbySprintSpeed")\n\treturn typeof(value)=="number" and value or Config.Movement.SprintSpeed\nend\n\nlocal function jumpPower(): number\n\tlocal value = player:GetAttribute("ObbyJumpPower")\n\treturn typeof(value)=="number" and value or Config.Movement.JumpPower\nend
 
 local function tweenFov(target: number)
 	if not camera then return end
@@ -40,7 +40,7 @@ end
 local function setSprint(value: boolean)
 	sprinting = value
 	if humanoid and humanoid.Health > 0 then
-		humanoid.WalkSpeed = value and Config.Movement.SprintSpeed or Config.Movement.WalkSpeed
+		humanoid.WalkSpeed = value and sprintSpeed() or Config.Movement.WalkSpeed
 	end
 	tweenFov(value and SPRINT_FOV or BASE_FOV)
 end
@@ -64,7 +64,7 @@ end
 local function bindCharacter(character: Model)
 	humanoid = character:WaitForChild("Humanoid") :: Humanoid
 	humanoid.UseJumpPower = true
-	humanoid.JumpPower = Config.Movement.JumpPower
+	humanoid.JumpPower = jumpPower()
 	humanoid.WalkSpeed = Config.Movement.WalkSpeed
 	humanoid.CameraOffset = Vector3.zero
 	currentLean = 0
@@ -161,7 +161,7 @@ RunService.RenderStepped:Connect(function()
 	end
 
 	-- Reassert calibrated movement if another Roblox script changes it.
-	local targetSpeed = sprinting and Config.Movement.SprintSpeed or Config.Movement.WalkSpeed
+	local targetSpeed = sprinting and sprintSpeed() or Config.Movement.WalkSpeed
 	if math.abs(humanoid.WalkSpeed - targetSpeed) > 0.1 then
 		humanoid.WalkSpeed = targetSpeed
 	end
