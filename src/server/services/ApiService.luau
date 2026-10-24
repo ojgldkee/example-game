@@ -51,6 +51,10 @@ function ApiService.Init(allServices)
 		if not allowed(player) then return false end
 		return services.QuestService.Reroll(player)
 	end
+	fn(Network.Functions.PurchaseUpgrade).OnServerInvoke=function(player,id)
+		if not allowed(player) or typeof(id)~="string" then return false,"Invalid" end
+		return services.UpgradeService.Purchase(player,id)
+	end
 end
 
 return ApiService
