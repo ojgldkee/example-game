@@ -10,7 +10,7 @@ local RoundService = {}
 local services
 local running = false
 local finalChase = false
-local roundId = 0
+local roundId = 0\nlocal nextWakeEventAt = 0
 
 local function remote(name: string)
 	return ReplicatedStorage:WaitForChild(Network.FolderName):WaitForChild(name)
