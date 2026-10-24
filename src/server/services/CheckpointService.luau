@@ -24,11 +24,12 @@ local function hookCheckpoint(checkpoint: BasePart)
 		local current=data.Checkpoint or 0
 		if index ~= current + 1 then return end
 		services.PlayerDataService.Set(player, "Checkpoint", index)
-		services.PlayerDataService.Add(player, "Tickets", Config.Game.TicketsPerCheckpoint)
+		local ticketReward=math.floor(Config.Game.TicketsPerCheckpoint*services.EntitlementService.TicketMultiplier(player))
+		services.PlayerDataService.Add(player, "Tickets", ticketReward)
 		services.PlayerDataService.Add(player, "XP", Config.Game.XPPerCheckpoint)
 		services.PlayerDataService.Add(player, "TotalCheckpoints", 1)
 		services.QuestService.AddStat(player,"Checkpoints",1)
-		ReplicatedStorage[Network.FolderName].Checkpoint:FireClient(player, index, Config.Game.TicketsPerCheckpoint)
+		ReplicatedStorage[Network.FolderName].Checkpoint:FireClient(player, index, ticketReward)
 	end)
 end
 
