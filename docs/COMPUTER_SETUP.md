@@ -50,16 +50,25 @@ Use Linux Mint Software Manager or:
 sudo apt install -y blender
 ```
 
-### 7. Generate Happy V2
+### 7. Generate Happy V3
 ```bash
 mkdir -p exports
 blender --background --python blender/generate_happy.py
 ```
 Expected outputs:
-- `exports/happy_v2.blend`
-- `exports/happy_v2.glb`
+- `exports/happy_v3.blend`
+- `exports/happy_v3.glb`
+- `exports/happy_animations/Happy_Idle.glb`
+- `exports/happy_animations/Happy_Walk.glb`
+- `exports/happy_animations/Happy_Run.glb`
+- `exports/happy_animations/Happy_Crawl.glb`
+- `exports/happy_animations/Happy_Lunge.glb`
+- `exports/happy_animations/Happy_Roar.glb`
+- `exports/happy_animations/Happy_WallPeek.glb`
+- `exports/happy_animations/Happy_CeilingCrawl.glb`
+- `exports/happy_animations/Happy_Jumpscare.glb`
 
-Happy V2 includes a more detailed mascot mesh, facial structure, jaw/eye bones, hands, shoes, and authored actions for idle, walk, run, crawl, lunge, roar, wall peek, ceiling crawl, and jumpscare. It still needs visual inspection before launch.
+Happy V3 uses deterministic one-bone weights instead of automatic skinning, so stylized body parts cannot get pulled onto the wrong bones. It saves with only Idle active and exports every animation into its own GLB under `exports/happy_animations/`, preventing actions from blending together in Blender.
 
 ## Windows / Roblox Studio setup
 
@@ -98,7 +107,7 @@ Press Play and verify:
 - settings and store UI scale correctly on mobile emulation.
 
 ### 6. Import Happy
-Import `exports/happy_v2.glb` using Studio's 3D importer.
+Import `exports/happy_v3.glb` using Studio's 3D importer.
 Move the final model into:
 `ReplicatedStorage > Assets > Happy`
 
