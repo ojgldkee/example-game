@@ -16,6 +16,8 @@ local function refresh(player)
 		end
 	end
 	owned[player]=state
+	player:SetAttribute("PassSpeedCoil", state.SpeedCoil == true)
+	player:SetAttribute("PassGravityCoil", state.GravityCoil == true)
 	return state
 end
 
@@ -28,6 +30,8 @@ function EntitlementService.Init(_services)
 			if id==passId then
 				owned[player]=owned[player] or {}
 				owned[player][name]=true
+				if name=="SpeedCoil" then player:SetAttribute("PassSpeedCoil", true) end
+				if name=="GravityCoil" then player:SetAttribute("PassGravityCoil", true) end
 				break
 			end
 		end
