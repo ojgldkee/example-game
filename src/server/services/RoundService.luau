@@ -10,7 +10,8 @@ local RoundService = {}
 local services
 local running = false
 local finalChase = false
-local roundId = 0\nlocal nextWakeEventAt = 0
+local roundId = 0
+local nextWakeEventAt = 0
 
 local function remote(name: string)
 	return ReplicatedStorage:WaitForChild(Network.FolderName):WaitForChild(name)
@@ -82,6 +83,10 @@ local function runRound()
 	services.FinishService.Reset()
 	resetPlayers()
 	running = true
+	nextWakeEventAt = os.clock() + math.random(
+		Config.Wake.RandomEventIntervalMin,
+		Config.Wake.RandomEventIntervalMax
+	)
 
 	for remaining = Config.Game.RoundSeconds, 0, -1 do
 		remote(Network.Events.Round):FireAllClients({phase = finalChase and "FINAL" or "RUN", seconds = remaining, roundId = roundId})
@@ -92,8 +97,12 @@ local function runRound()
 				if hum and hum.Health>0 then services.QuestService.AddStat(p,"SurvivalSeconds",15) end
 			end
 		end
-		if not finalChase and remaining % math.random(Config.Wake.RandomEventIntervalMin,Config.Wake.RandomEventIntervalMax) == 0 then
+		if not finalChase and os.clock() >= nextWakeEventAt then
 			services.WakeEventService.TryRandom()
+			nextWakeEventAt = os.clock() + math.random(
+				Config.Wake.RandomEventIntervalMin,
+				Config.Wake.RandomEventIntervalMax
+			)
 		end
 		if finalChase then
 			for chase = Config.Game.FinalChaseSeconds, 0, -1 do
