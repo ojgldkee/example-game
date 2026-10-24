@@ -38,6 +38,15 @@ local function grant(player,name)
 		toastAll(player.DisplayName.." woke Happy up faster!")
 	elseif name=="QuestReroll" then
 		services.QuestService.Reroll(player)
+	elseif name=="LowGravityServer" then
+		services.WakeEventService.Force("low_gravity")
+		toastAll(player.DisplayName.." bought LOW GRAVITY!")
+	elseif name=="TinyServer" then
+		services.WakeEventService.Force("tiny_players")
+		toastAll(player.DisplayName.." made everyone TINY!")
+	elseif name=="BlackoutServer" then
+		services.WakeEventService.Force("lights_out")
+		toastAll(player.DisplayName.." triggered BLACKOUT!")
 	end
 end
 
