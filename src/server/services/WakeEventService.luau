@@ -116,6 +116,19 @@ function WakeEventService.TryRandom()
 	end)
 end
 
+function WakeEventService.Force(id:string)
+	for _, event in ipairs(WakeEvents) do
+		if event.Id == id then
+			task.spawn(function()
+				local ok, err = pcall(execute, event)
+				if not ok then warn("Forced wake event failed", id, err) end
+			end)
+			return true
+		end
+	end
+	return false
+end
+
 function WakeEventService.Reset()
 	running=false
 	Workspace.Gravity=196.2
