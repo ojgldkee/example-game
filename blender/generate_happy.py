@@ -225,6 +225,23 @@ except Exception as exc:
     arm_mod=body_mesh.modifiers.new("Armature","ARMATURE")
     arm_mod.object=arm
 
+# ---------- skin weight cleanup ----------
+# Roblox/glTF skinning is happiest with <= 4 joint influences per vertex.
+# Automatic weights can assign more than four, so clamp and normalize before export.
+bpy.context.view_layer.objects.active = body_mesh
+body_mesh.select_set(True)
+arm.select_set(False)
+try:
+    bpy.ops.object.mode_set(mode="OBJECT")
+except Exception:
+    pass
+
+try:
+    bpy.ops.object.vertex_group_limit_total(limit=4)
+    bpy.ops.object.vertex_group_normalize_all(lock_active=False)
+except Exception as exc:
+    print("Weight cleanup warning:", exc)
+
 # ---------- animation helpers ----------
 # Blender does not allocate animation_data until explicitly requested.
 # Create it once before any keyframe helper assigns an action.
