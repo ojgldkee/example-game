@@ -35,7 +35,12 @@ function ObstacleService.Init(_services)
 		local map = Workspace:WaitForChild("GeneratedPlayground")
 		for _, d in ipairs(map:GetDescendants()) do
 			if d:IsA("BasePart") then
-				if d:GetAttribute("FallingTile") then
+				if d:GetAttribute("KillPart") then
+					d.Touched:Connect(function(hit)
+						local hum=hit.Parent and hit.Parent:FindFirstChildOfClass("Humanoid")
+						if hum and hum.Health>0 then hum.Health=0 end
+					end)
+				elseif d:GetAttribute("FallingTile") then
 					hookFallingTile(d)
 				elseif d:GetAttribute("Spinner") then
 					originals[d] = d.CFrame
