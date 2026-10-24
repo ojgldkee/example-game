@@ -4,7 +4,8 @@ local DataStoreService = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
-local Network = require(ReplicatedStorage.Shared.Network)\nlocal Upgrades = require(ReplicatedStorage.Shared.Upgrades)
+local Network = require(ReplicatedStorage.Shared.Network)
+local Upgrades = require(ReplicatedStorage.Shared.Upgrades)
 
 local PlayerDataService = {}
 local store = DataStoreService:GetDataStore("PlaygroundAwake_PlayerData_v2")
@@ -23,7 +24,8 @@ local DEFAULT = {
 	BestWakeEscaped = 0,
 	TotalDeaths = 0,
 	TotalCheckpoints = 0,
-	Receipts = {},\n\tUpgrades = Upgrades.DefaultLevels(),
+	Receipts = {},
+	Upgrades = Upgrades.DefaultLevels(),
 	Daily = {Last=-999999, Streak=0},
 	QuestState = {DateKey="", Active={}, Stats={}},
 	Cosmetics = {
@@ -88,7 +90,8 @@ local function snapshot(player: Player)
 		Daily=data.Daily,
 		QuestState=data.QuestState,
 		Cosmetics=data.Cosmetics,
-		Settings=data.Settings,\n\t\tUpgrades=data.Upgrades,
+		Settings=data.Settings,
+		Upgrades=data.Upgrades,
 	}
 end
 
