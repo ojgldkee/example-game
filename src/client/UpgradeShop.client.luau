@@ -105,7 +105,7 @@ list.Padding = UDim.new(0,10)
 list.Parent = scroll
 
 local levels: {[string]: number} = {}
-local tickets = 0
+local tickets = 150
 local cards: {[string]: {button: TextButton, level: TextLabel, cost: TextLabel}} = {}
 
 local function nextCost(id: string): number?
@@ -248,7 +248,8 @@ end
 
 open.Activated:Connect(function()
 	shade.Visible = true
-	task.spawn(loadProfile)
+	refreshAll()
+task.spawn(loadProfile)
 end)
 close.Activated:Connect(function()
 	shade.Visible = false
