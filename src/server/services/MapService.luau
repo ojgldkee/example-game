@@ -148,10 +148,10 @@ local function roomShell(section:Model,centerZ:number,color:Color3,stage:number)
 	end
 
 	-- Entry and exit islands are the only guaranteed solid ground in every room.
-	local entry=platform(section,"StageEntry",0,2.4,startZ+8,20,10,color)
+	local entry=platform(section,"StageEntry",0,2.4,startZ+7,20,14,color)
 	entry:SetAttribute("SafeIsland",true)
 
-	local checkpoint=platform(section,"Checkpoint",0,2.4,endZ-8,20,10,P.Green)
+	local checkpoint=platform(section,"Checkpoint",0,2.4,endZ-7,20,14,P.Green)
 	checkpoint.Material=Enum.Material.Neon
 	checkpoint:SetAttribute("CheckpointIndex",stage)
 	checkpoint:SetAttribute("SafeIsland",true)
@@ -168,7 +168,7 @@ end
 
 local function seriesStart(centerZ:number):number
 	local startZ,_=stageBounds(centerZ)
-	return startZ+18
+	return startZ+20
 end
 
 local function seriesPad(section:Model,name:string,x:number,y:number,z:number,w:number,d:number,color:Color3)
