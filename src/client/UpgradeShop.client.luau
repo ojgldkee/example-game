@@ -62,7 +62,7 @@ local balance = Instance.new("TextLabel")
 balance.BackgroundTransparency = 1
 balance.Size = UDim2.new(.45,0,0,34)
 balance.Position = UDim2.new(0,22,0,64)
-balance.Text = "TICKETS: ..."
+balance.Text = "TICKETS: 150"
 balance.TextColor3 = Color3.fromRGB(255,216,66)
 balance.Font = Enum.Font.GothamBold
 balance.TextScaled = true
@@ -175,6 +175,7 @@ for _, id in ipairs(Upgrades.Order) do
 	desc.Parent = card
 
 	local level = Instance.new("TextLabel")
+	level.Text = "LEVEL 0 / 5"
 	level.BackgroundTransparency = 1
 	level.Size = UDim2.new(.19,0,0,28)
 	level.Position = UDim2.new(.50,0,0,12)
@@ -184,6 +185,7 @@ for _, id in ipairs(Upgrades.Order) do
 	level.Parent = card
 
 	local cost = Instance.new("TextLabel")
+	cost.Text = "LOADING..."
 	cost.BackgroundTransparency = 1
 	cost.Size = UDim2.new(.19,0,0,28)
 	cost.Position = UDim2.new(.50,0,0,52)
@@ -193,6 +195,7 @@ for _, id in ipairs(Upgrades.Order) do
 	cost.Parent = card
 
 	local buy = Instance.new("TextButton")
+	buy.Text = "UPGRADE"
 	buy.Size = UDim2.new(.25,-12,0,54)
 	buy.Position = UDim2.new(.75,0,.5,-27)
 	buy.BackgroundColor3 = Color3.fromRGB(67,225,155)
@@ -229,7 +232,7 @@ for _, id in ipairs(Upgrades.Order) do
 end
 
 local function loadProfile()
-	for _=1,8 do
+	for _=1,40 do
 		local ok, snapshot = pcall(function()
 			return getSnapshot:InvokeServer()
 		end)
