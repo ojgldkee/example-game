@@ -16,7 +16,12 @@ local level=Instance.new("TextLabel"); level.Text="LEVEL 1   •   0 WINS"; leve
 local function render(p)
 	if not p then return end
 	tickets.Text=("%s TICKETS"):format(tostring(p.Tickets or 0))
-	level.Text=("LEVEL %d   •   %d WINS"):format(p.Level or 1,p.Wins or 0)
+	local best = p.BestTime or 0
+	if best > 0 then
+		level.Text=("LV %d • %d WINS • BEST %.2fs"):format(p.Level or 1,p.Wins or 0,best)
+	else
+		level.Text=("LV %d • %d WINS • NO BEST YET"):format(p.Level or 1,p.Wins or 0)
+	end
 end
 remotes.Profile.OnClientEvent:Connect(render)
 task.spawn(function()
