@@ -22,7 +22,7 @@ function FinishService.Init(allServices)
 			if not data or (data.Checkpoint or 0)<Config.Map.SectionCount then return end
 			finished[player]=true
 			services.PlayerDataService.Add(player,"Wins",1)
-			local ticketReward=math.floor(Config.Game.TicketsPerWin*services.EntitlementService.TicketMultiplier(player))
+			local ticketReward=math.floor(Config.Game.TicketsPerWin*services.EntitlementService.TicketMultiplier(player)*services.UpgradeService.TicketMultiplier(player))
 			services.PlayerDataService.Add(player,"Tickets",ticketReward)
 			services.PlayerDataService.Add(player,"XP",Config.Game.XPPerWin)
 			services.QuestService.AddStat(player,"Wins",1)
