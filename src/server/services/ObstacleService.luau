@@ -15,9 +15,11 @@ local hazardCooldown: {[Player]: number} = {}
 local damageCooldown: {[Humanoid]: number} = {}
 local conveyorCooldown: {[Humanoid]: number} = {}
 local bounceCooldown: {[Humanoid]: number} = {}
+local speedCooldown: {[Humanoid]: number} = {}
+local blinkParts: {BasePart} = {}
 
 local function findRespawnCFrame(player: Player): CFrame?
-	local data = services and services.PlayerDataService and services.PlayerDataService.Get(player)
+	local data = services.PlayerDataService.Get(player)
 	local map = Workspace:FindFirstChild("GeneratedPlayground")
 	if not map then return nil end
 
@@ -38,23 +40,27 @@ local function findRespawnCFrame(player: Player): CFrame?
 end
 
 local function getHumanoidFromHit(hit: BasePart): (Humanoid?, Model?)
-	local character = hit.Parent
-	if not character then return nil, nil end
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	if humanoid then return humanoid, character end
-
-	if character.Parent then
-		local maybeHumanoid = character.Parent:FindFirstChildOfClass("Humanoid")
-		if maybeHumanoid and character.Parent:IsA("Model") then
-			return maybeHumanoid, character.Parent
+	local current: Instance? = hit
+	for _=1,3 do
+		if not current then break end
+		if current:IsA("Model") then
+			local humanoid = current:FindFirstChildOfClass("Humanoid")
+			if humanoid then return humanoid, current end
 		end
+		current = current.Parent
 	end
-
 	return nil, nil
 end
 
-local function hookHazard(part: BasePart)
-	part.Touched:Connect(function(hit)
+local function upgradedDamage(player: Player?, rawDamage: number): number
+	if not player or not services.UpgradeService then
+		return rawDamage
+	end
+	return math.max(1, math.floor(rawDamage * services.UpgradeService.HazardMultiplier(player) + 0.5))
+end
+
+local function hookHazard(hazard: BasePart)
+	hazard.Touched:Connect(function(hit)
 		local humanoid, character = getHumanoidFromHit(hit)
 		if not humanoid or not character or humanoid.Health <= 0 then return end
 
@@ -67,15 +73,13 @@ local function hookHazard(part: BasePart)
 		end
 		hazardCooldown[player] = now
 
-		local damage = part:GetAttribute("HazardDamage") or Config.Obby.EarlyHazardDamage
-		humanoid:TakeDamage(damage)
+		local raw = hazard:GetAttribute("HazardDamage") or Config.Obby.EarlyHazardDamage
+		humanoid:TakeDamage(upgradedDamage(player, raw))
 
-		-- Falling off a platform should cost health and reset progress position,
-		-- not instantly murder the player from a tiny toe touch.
 		if humanoid.Health > 0 then
 			local respawnCFrame = findRespawnCFrame(player)
 			if respawnCFrame then
-				task.defer(function()
+				task.delay(Config.Obby.FallResetDelay, function()
 					if character.Parent and humanoid.Health > 0 then
 						character:PivotTo(respawnCFrame)
 					end
@@ -85,8 +89,8 @@ local function hookHazard(part: BasePart)
 	end)
 end
 
-local function hookDamagePart(part: BasePart)
-	part.Touched:Connect(function(hit)
+local function hookDamagePart(obstacle: BasePart)
+	obstacle.Touched:Connect(function(hit)
 		local humanoid, character = getHumanoidFromHit(hit)
 		if not humanoid or not character or humanoid.Health <= 0 then return end
 
@@ -96,15 +100,16 @@ local function hookDamagePart(part: BasePart)
 		end
 		damageCooldown[humanoid] = now
 
-		local damage = part:GetAttribute("Damage") or Config.Obby.LaserDamage
-		humanoid:TakeDamage(damage)
+		local player = Players:GetPlayerFromCharacter(character)
+		local raw = obstacle:GetAttribute("Damage") or Config.Obby.LaserDamage
+		humanoid:TakeDamage(upgradedDamage(player, raw))
 
 		local root = character:FindFirstChild("HumanoidRootPart")
 		if root and root:IsA("BasePart") then
-			local away = root.Position - part.Position
-			if away.Magnitude > 0.05 then
-				local horizontal = Vector3.new(away.X,0,away.Z).Unit
-				root.AssemblyLinearVelocity += horizontal * 12 + Vector3.new(0,8,0)
+			local away = root.Position - obstacle.Position
+			local horizontal = Vector3.new(away.X,0,away.Z)
+			if horizontal.Magnitude > 0.05 then
+				root.AssemblyLinearVelocity += horizontal.Unit * 10 + Vector3.new(0,7,0)
 			end
 		end
 	end)
@@ -118,13 +123,12 @@ local function hookFallingTile(tile: BasePart)
 		if not humanoid or humanoid.Health <= 0 or fallingTouched[tile] then return end
 
 		fallingTouched[tile] = true
-		local delayTime = tile:GetAttribute("FallDelay") or 0.55
+		local delayTime = tile:GetAttribute("FallDelay") or 0.62
 
-		-- Flash warning before dropping.
 		task.spawn(function()
 			for _=1,3 do
 				if not tile.Parent then return end
-				tile.Transparency = 0.32
+				tile.Transparency = 0.28
 				task.wait(delayTime/6)
 				if not tile.Parent then return end
 				tile.Transparency = 0
@@ -133,10 +137,10 @@ local function hookFallingTile(tile: BasePart)
 
 			if tile.Parent then
 				tile.CanCollide = false
-				tile.Transparency = 0.72
+				tile.Transparency = 0.78
 			end
 
-			task.wait(1.8)
+			task.wait(1.75)
 
 			if tile.Parent and originals[tile] then
 				tile.CFrame = originals[tile]
@@ -154,7 +158,7 @@ local function hookBouncePad(pad: BasePart)
 		if not humanoid or not character or humanoid.Health <= 0 then return end
 
 		local now = os.clock()
-		if bounceCooldown[humanoid] and now - bounceCooldown[humanoid] < 0.6 then return end
+		if bounceCooldown[humanoid] and now - bounceCooldown[humanoid] < 0.55 then return end
 		bounceCooldown[humanoid] = now
 
 		local root = character:FindFirstChild("HumanoidRootPart")
@@ -163,27 +167,58 @@ local function hookBouncePad(pad: BasePart)
 			root.AssemblyLinearVelocity = Vector3.new(
 				root.AssemblyLinearVelocity.X,
 				bounce,
-				math.max(root.AssemblyLinearVelocity.Z, 12)
+				math.max(root.AssemblyLinearVelocity.Z, 15)
 			)
 		end
 	end)
 end
 
-local function hookConveyor(part: BasePart)
-	part.Touched:Connect(function(hit)
+local function hookConveyor(conveyor: BasePart)
+	conveyor.Touched:Connect(function(hit)
 		local humanoid, character = getHumanoidFromHit(hit)
 		if not humanoid or not character or humanoid.Health <= 0 then return end
 
 		local now = os.clock()
-		if conveyorCooldown[humanoid] and now - conveyorCooldown[humanoid] < 0.2 then return end
+		if conveyorCooldown[humanoid] and now - conveyorCooldown[humanoid] < 0.18 then return end
 		conveyorCooldown[humanoid] = now
 
 		local root = character:FindFirstChild("HumanoidRootPart")
 		if root and root:IsA("BasePart") then
-			local speed = part:GetAttribute("ConveyorSpeed") or 0
-			root.AssemblyLinearVelocity += Vector3.new(0,0,speed)
+			root.AssemblyLinearVelocity += Vector3.new(0,0,conveyor:GetAttribute("ConveyorSpeed") or 0)
 		end
 	end)
+end
+
+local function hookSpeedPad(pad: BasePart)
+	pad.Touched:Connect(function(hit)
+		local humanoid, character = getHumanoidFromHit(hit)
+		if not humanoid or not character or humanoid.Health <= 0 then return end
+
+		local now = os.clock()
+		if speedCooldown[humanoid] and now - speedCooldown[humanoid] < 0.6 then return end
+		speedCooldown[humanoid] = now
+
+		local root = character:FindFirstChild("HumanoidRootPart")
+		if root and root:IsA("BasePart") then
+			local boost = pad:GetAttribute("SpeedBoost") or Config.Obby.SpeedPadBoost
+			local forward = root.CFrame.LookVector
+			root.AssemblyLinearVelocity += Vector3.new(forward.X*boost,5,forward.Z*boost)
+		end
+	end)
+end
+
+local function register(part: BasePart)
+	if part:GetAttribute("HazardPart") then hookHazard(part) end
+	if part:GetAttribute("DamagePart") then hookDamagePart(part) end
+	if part:GetAttribute("FallingTile") then hookFallingTile(part) end
+	if part:GetAttribute("BouncePad") then hookBouncePad(part) end
+	if part:GetAttribute("Conveyor") then hookConveyor(part) end
+	if part:GetAttribute("SpeedPad") then hookSpeedPad(part) end
+	if part:GetAttribute("BlinkPlatform") then table.insert(blinkParts, part) end
+
+	if part:GetAttribute("Spinner") or part:GetAttribute("MoveAxis") then
+		originals[part] = part.CFrame
+	end
 end
 
 function ObstacleService.Init(allServices)
@@ -194,26 +229,15 @@ function ObstacleService.Init(allServices)
 
 		for _, descendant in ipairs(map:GetDescendants()) do
 			if descendant:IsA("BasePart") then
-				if descendant:GetAttribute("HazardPart") then
-					hookHazard(descendant)
-				end
-				if descendant:GetAttribute("DamagePart") then
-					hookDamagePart(descendant)
-				end
-				if descendant:GetAttribute("FallingTile") then
-					hookFallingTile(descendant)
-				end
-				if descendant:GetAttribute("BouncePad") then
-					hookBouncePad(descendant)
-				end
-				if descendant:GetAttribute("Conveyor") then
-					hookConveyor(descendant)
-				end
-				if descendant:GetAttribute("Spinner") or descendant:GetAttribute("MoveAxis") then
-					originals[descendant] = descendant.CFrame
-				end
+				register(descendant)
 			end
 		end
+
+		map.DescendantAdded:Connect(function(descendant)
+			if descendant:IsA("BasePart") then
+				register(descendant)
+			end
+		end)
 
 		local start = os.clock()
 		RunService.Heartbeat:Connect(function()
@@ -226,20 +250,31 @@ function ObstacleService.Init(allServices)
 
 				if movingPart:GetAttribute("Spinner") then
 					local speed = movingPart:GetAttribute("SpinSpeed") or 28
-					movingPart.CFrame = base * CFrame.Angles(0, math.rad(t * speed), 0)
+					movingPart.CFrame = base * CFrame.Angles(0,math.rad(t*speed),0)
 				elseif movingPart:GetAttribute("MoveAxis") then
 					local distance = movingPart:GetAttribute("MoveDistance") or 4
-					local speed = movingPart:GetAttribute("MoveSpeed") or 0.9
-					local offset = math.sin(t * speed) * distance
+					local speed = movingPart:GetAttribute("MoveSpeed") or .9
+					local offset = math.sin(t*speed) * distance
 					local axis = movingPart:GetAttribute("MoveAxis")
 
-					if axis == "X" then
+					if axis=="X" then
 						movingPart.CFrame = base + Vector3.new(offset,0,0)
-					elseif axis == "Y" then
+					elseif axis=="Y" then
 						movingPart.CFrame = base + Vector3.new(0,offset,0)
 					else
 						movingPart.CFrame = base + Vector3.new(0,0,offset)
 					end
+				end
+			end
+
+			local cycle = Config.Obby.BlinkOnSeconds + Config.Obby.BlinkOffSeconds
+			for _, blink in ipairs(blinkParts) do
+				if blink.Parent then
+					local phase = blink:GetAttribute("BlinkPhase") or 0
+					local localTime = (t + phase) % cycle
+					local on = localTime < Config.Obby.BlinkOnSeconds
+					blink.CanCollide = on
+					blink.Transparency = on and 0 or 0.82
 				end
 			end
 		end)
