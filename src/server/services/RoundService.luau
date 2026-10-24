@@ -29,12 +29,13 @@ local function bindDeaths(player: Player)
 		local hum = character:WaitForChild("Humanoid") :: Humanoid
 		hum.Died:Connect(function()
 			if not running then return end
+			services.PlayerDataService.Add(player,"TotalDeaths",1)
 			services.WakeService.Add(Config.Game.BaseWakePerDeath)
 			remote(Network.Events.Eliminated):FireClient(player)
-			task.delay(2.5, function()
+			task.delay(Config.Game.RespawnDelay, function()
 				if player.Parent then
 					player:LoadCharacter()
-					task.wait(0.5)
+					task.wait(0.45)
 					services.CheckpointService.RespawnAtCheckpoint(player)
 				end
 			end)
@@ -47,6 +48,9 @@ end
 local function resetPlayers()
 	for _, p in ipairs(Players:GetPlayers()) do
 		services.PlayerDataService.Set(p, "Checkpoint", 0)
+		services.QuestService.EnsureDaily(p)
+		services.PlayerDataService.Add(p,"RoundsPlayed",1)
+		services.QuestService.AddStat(p,"Rounds",1)
 		if not p.Character then p:LoadCharacter() end
 		task.wait()
 		teleportToStart(p)
@@ -58,13 +62,14 @@ function RoundService.BeginFinalChase()
 	finalChase = true
 	services.MonsterService.SetActive(true)
 	services.MonsterService.SetRage(true)
-	remote(Network.Events.Round):FireAllClients({phase = "FINAL", seconds = Config.Game.FinalChaseSeconds})
+	remote(Network.Events.Round):FireAllClients({phase = "FINAL", seconds = Config.Game.FinalChaseSeconds, roundId=roundId})
 end
 
 local function runRound()
 	roundId += 1
 	finalChase = false
 	services.WakeService.Reset()
+	services.WakeEventService.Reset()
 	services.MonsterService.Reset()
 	services.FinishService.Reset()
 	resetPlayers()
@@ -72,6 +77,16 @@ local function runRound()
 
 	for remaining = Config.Game.RoundSeconds, 0, -1 do
 		remote(Network.Events.Round):FireAllClients({phase = finalChase and "FINAL" or "RUN", seconds = remaining, roundId = roundId})
+		if remaining % 15 == 0 then
+			for _,p in ipairs(Players:GetPlayers()) do
+				local char=p.Character
+				local hum=char and char:FindFirstChildOfClass("Humanoid")
+				if hum and hum.Health>0 then services.QuestService.AddStat(p,"SurvivalSeconds",15) end
+			end
+		end
+		if not finalChase and remaining % math.random(Config.Wake.RandomEventIntervalMin,Config.Wake.RandomEventIntervalMax) == 0 then
+			services.WakeEventService.TryRandom()
+		end
 		if finalChase then
 			for chase = Config.Game.FinalChaseSeconds, 0, -1 do
 				remote(Network.Events.Round):FireAllClients({phase = "FINAL", seconds = chase, roundId = roundId})
@@ -84,8 +99,10 @@ local function runRound()
 
 	running = false
 	services.MonsterService.Reset()
+	services.WakeEventService.Reset()
 end
 
+function RoundService.IsRunning() return running end
 function RoundService.Init(allServices)
 	services = allServices
 	Players.PlayerAdded:Connect(bindDeaths)
@@ -95,7 +112,7 @@ end
 function RoundService.Start()
 	while true do
 		for remaining = Config.Game.IntermissionSeconds, 0, -1 do
-			remote(Network.Events.Round):FireAllClients({phase = "INTERMISSION", seconds = remaining})
+			remote(Network.Events.Round):FireAllClients({phase = "INTERMISSION", seconds = remaining, roundId=roundId})
 			task.wait(1)
 		end
 		runRound()
