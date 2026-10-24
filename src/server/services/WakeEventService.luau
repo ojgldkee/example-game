@@ -72,11 +72,24 @@ local function execute(event)
 		scalePlayers(.68); task.wait(event.Duration); resetScale(.68)
 	elseif event.Id == "giant_players" then
 		scalePlayers(1.28); task.wait(event.Duration); resetScale(1.28)
-	elseif event.Id == "monster_sprint" or event.Id == "happy_peek" then
+	elseif event.Id == "happy_peek" then
 		services.MonsterService.SetActive(true)
-		services.MonsterService.SetRage(event.Id=="monster_sprint")
+		services.MonsterService.SetRage(false)
+		services.MonsterService.PlaySpecial("WallPeek", math.min(event.Duration, 3.2), true)
 		task.wait(event.Duration)
-		if services.WakeService.Get() < 60 then services.MonsterService.SetActive(false) end
+		if services.WakeService.Get() < 60 then
+			services.MonsterService.SetActive(false)
+		end
+	elseif event.Id == "monster_sprint" then
+		services.MonsterService.SetActive(true)
+		services.MonsterService.PlaySpecial("Roar", 1.1, true)
+		task.wait(1.1)
+		services.MonsterService.SetRage(true)
+		task.wait(math.max(0, event.Duration - 1.1))
+		if services.WakeService.Get() < 60 then
+			services.MonsterService.SetRage(false)
+			services.MonsterService.SetActive(false)
+		end
 	elseif event.Id == "camera_shake" or event.Id == "platform_pulse" or event.Id == "fake_checkpoint" or event.Id == "reverse_conveyors" or event.Id == "speed_floor" then
 		task.wait(event.Duration)
 	else
