@@ -66,7 +66,6 @@ local function runRound()
 	finalChase = false
 	services.WakeService.Reset()
 	services.MonsterService.Reset()
-	services.MapService.Build()
 	resetPlayers()
 	running = true
 
