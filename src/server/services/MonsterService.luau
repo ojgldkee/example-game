@@ -56,7 +56,7 @@ local function createMonster()
 	loadTrack("Walk",Config.AnimationIds.HappyWalk,Enum.AnimationPriority.Movement,true)
 	loadTrack("Run",Config.AnimationIds.HappyRun,Enum.AnimationPriority.Movement,true)
 	loadTrack("Crawl",Config.AnimationIds.HappyCrawl,Enum.AnimationPriority.Action,true)
-	loadTrack("Lunge",Config.AnimationIds.HappyLunge,Enum.AnimationPriority.Action,false)
+	loadTrack("Lunge",Config.AnimationIds.HappyLunge,Enum.AnimationPriority.Action,false)\n\tloadTrack("Roar",Config.AnimationIds.HappyRoar,Enum.AnimationPriority.Action,false)\n\tloadTrack("WallPeek",Config.AnimationIds.HappyWallPeek,Enum.AnimationPriority.Action,false)\n\tloadTrack("CeilingCrawl",Config.AnimationIds.HappyCeilingCrawl,Enum.AnimationPriority.Action,true)\n\tloadTrack("Jumpscare",Config.AnimationIds.HappyJumpscare,Enum.AnimationPriority.Action,false)
 end
 
 local function nearest()
@@ -117,6 +117,6 @@ end
 
 function MonsterService.Init(allServices) services=allServices; createMonster(); task.spawn(chaseLoop) end
 function MonsterService.SetActive(v) active=v; if v then spawnBehind() elseif model then model:PivotTo(CFrame.new(0,-100,0)) end end
-function MonsterService.SetRage(v) rage=v end
+function MonsterService.SetRage(v) rage=v end\n\nfunction MonsterService.PlaySpecial(name:string)\n\tif name=="Roar" then play("Roar")\n\telseif name=="WallPeek" then play("WallPeek")\n\telseif name=="CeilingCrawl" then play("CeilingCrawl")\n\telseif name=="Jumpscare" then play("Jumpscare")\n\tend\nend
 function MonsterService.Reset() active=false; rage=false; if model then model:PivotTo(CFrame.new(0,-100,0)) end end
 return MonsterService
