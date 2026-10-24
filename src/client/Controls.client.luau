@@ -24,7 +24,17 @@ local JUMP_BUFFER = 0.13
 local LEAN_AMOUNT = 1.05
 local LEAN_TIME = 0.12
 local BASE_FOV = 70
-local SPRINT_FOV = 76\n\nlocal function sprintSpeed(): number\n\tlocal value = player:GetAttribute("ObbySprintSpeed")\n\treturn typeof(value)=="number" and value or Config.Movement.SprintSpeed\nend\n\nlocal function jumpPower(): number\n\tlocal value = player:GetAttribute("ObbyJumpPower")\n\treturn typeof(value)=="number" and value or Config.Movement.JumpPower\nend
+local SPRINT_FOV = 76
+
+local function sprintSpeed(): number
+	local value = player:GetAttribute("ObbySprintSpeed")
+	return typeof(value)=="number" and value or Config.Movement.SprintSpeed
+end
+
+local function jumpPower(): number
+	local value = player:GetAttribute("ObbyJumpPower")
+	return typeof(value)=="number" and value or Config.Movement.JumpPower
+end
 
 local function tweenFov(target: number)
 	if not camera then return end
