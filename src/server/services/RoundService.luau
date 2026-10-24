@@ -56,6 +56,7 @@ end
 local function resetPlayers()
 	for _, p in ipairs(Players:GetPlayers()) do
 		services.PlayerDataService.Set(p, "Checkpoint", 0)
+		services.CheckpointService.ResetPlayerStage(p)
 		services.QuestService.EnsureDaily(p)
 		services.PlayerDataService.Add(p,"RoundsPlayed",1)
 		services.QuestService.AddStat(p,"Rounds",1)
