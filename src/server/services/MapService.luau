@@ -160,10 +160,18 @@ local function roomShell(section:Model,centerZ:number,color:Color3,stage:number)
 	-- Front face of an unrotated board points toward -Z, exactly where players approach from.
 	surfaceSign(
 		section,
-		("STAGE %02d / %02d\n%s\nGO FORWARD"):format(stage,Config.Map.SectionCount,STAGES[stage]),
-		CFrame.new(0,13,startZ+2.2),
-		Vector3.new(26,8,.6),
+		("STAGE %02d / %02d   •   %s"):format(stage,Config.Map.SectionCount,STAGES[stage]),
+		CFrame.new(0,28,startZ+3.2),
+		Vector3.new(24,4.2,.45),
 		color
+	)
+	-- Small directional marker instead of a giant board covering the player's view.
+	surfaceSign(
+		section,
+		">>>",
+		CFrame.new(-18,7,startZ+4),
+		Vector3.new(5,2.4,.35),
+		P.Green
 	)
 end
 
