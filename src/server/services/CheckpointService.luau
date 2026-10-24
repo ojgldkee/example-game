@@ -53,7 +53,9 @@ local function hookCheckpoint(checkpoint: BasePart)
 		services.PlayerDataService.Set(player,"Checkpoint",index)
 
 		local ticketReward = math.floor(
-			Config.Game.TicketsPerCheckpoint * services.EntitlementService.TicketMultiplier(player)
+			Config.Game.TicketsPerCheckpoint
+			* services.EntitlementService.TicketMultiplier(player)
+			* services.UpgradeService.TicketMultiplier(player)
 		)
 
 		services.PlayerDataService.Add(player,"Tickets",ticketReward)
@@ -93,6 +95,35 @@ end
 
 function CheckpointService.ResetPlayerStage(player: Player)
 	setVisibleStage(player,0)
+end
+
+function CheckpointService.SkipOneStage(player: Player)
+	local data = services.PlayerDataService.Get(player)
+	if not data then return false, "Profile loading" end
+
+	local current = data.Checkpoint or 0
+	if current >= Config.Map.SectionCount then
+		return false, "Already at final stage"
+	end
+
+	local nextIndex = current + 1
+	services.PlayerDataService.Set(player, "Checkpoint", nextIndex)
+	setVisibleStage(player, nextIndex)
+
+	local map = Workspace:FindFirstChild("GeneratedPlayground")
+	if not map then return false, "Map missing" end
+
+	for _, descendant in ipairs(map:GetDescendants()) do
+		if descendant:IsA("BasePart") and descendant:GetAttribute("CheckpointIndex") == nextIndex then
+			if player.Character then
+				player.Character:PivotTo(descendant.CFrame + Vector3.new(0, Config.Obby.CheckpointLift, 0))
+			end
+			ReplicatedStorage[Network.FolderName].Checkpoint:FireClient(player, nextIndex, 0)
+			return true, nextIndex
+		end
+	end
+
+	return false, "Checkpoint missing"
 end
 
 function CheckpointService.RespawnAtCheckpoint(player: Player)
