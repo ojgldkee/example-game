@@ -30,6 +30,7 @@ end
 local servicesFolder = ServerScriptService.Server:WaitForChild("services")
 local ordered = {
 	"PlayerDataService",
+	"EntitlementService",
 	"SettingsService",
 	"QuestService",
 	"DailyRewardService",
