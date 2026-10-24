@@ -73,19 +73,9 @@ local function hookHazard(hazard: BasePart)
 		end
 		hazardCooldown[player] = now
 
-		local raw = hazard:GetAttribute("HazardDamage") or Config.Obby.EarlyHazardDamage
-		humanoid:TakeDamage(upgradedDamage(player, raw))
-
-		if humanoid.Health > 0 then
-			local respawnCFrame = findRespawnCFrame(player)
-			if respawnCFrame then
-				task.delay(Config.Obby.FallResetDelay, function()
-					if character.Parent and humanoid.Health > 0 then
-						character:PivotTo(respawnCFrame)
-					end
-				end)
-			end
-		end
+		-- Deep red death floor is always lethal. Armor applies to lasers/crushers,
+		-- not falling off the course.
+		humanoid.Health = 0
 	end)
 end
 
