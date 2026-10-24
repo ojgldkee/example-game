@@ -1,0 +1,10 @@
+*.rbxl
+*.rbxlx
+*.rbxm
+*.rbxmx
+.DS_Store
+Thumbs.db
+/out/
+/build/
+/exports/
+*.blend1
